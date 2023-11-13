@@ -189,7 +189,7 @@ const addEmployee = () => {
                 let roleName = data.role;
                 let first_name = data.first_name;
                 let last_name = data.last_name;
-                let roles_id = '';
+                let role_id = '';
                 let manager = '';
                 db.query(`SELECT id FROM role WHERE role.title = ?`, data.role, (err, results) => {
                     role_id = results[0].id;
@@ -203,10 +203,25 @@ const addEmployee = () => {
                             choices: employeeArray
                         }                    
                     ]).then((data) => {
-                        db.query
+                        db.query(`SELECT id FROM role WHERE role.title = ?`, roleName, (err, results) => {
+                            role_id = results[0].id;
+                        })
+                        db.query(`SELECT id FROM employee WHERE employee.first_name = ? AND employee.last_name = ?;`, data.manager.splits(""), (err, results) => {
+                            manager = results[0].id;
+                            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                            VALUES (?,?,?)`, [frist_name, last_name, role_id, manager], (err, results) => {
+                                console.log("\nNew role added. see below");
+                                viewAllEmployees();
+                         })
                     })
-                }
-            })
+                })
+            } else {
+                manager = null;
+                db.query(`SELECT id FROM role WHERE role.title = ?`, roleName, (err, results) => {
+                    role_id = results[0].id;
+                db.query(`INSERT INTO empployee (first_name, last_name, role_id, manager_id)
+                VALUES (?,?,?,?)`, [data.first_name, data.last_name, role_id, manager])
+            }
             ])
         })
     })
