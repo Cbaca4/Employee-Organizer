@@ -1,10 +1,10 @@
-const mysql = require('mysql2')
-const inquirer = require('inquirer');
-const table = require('console.table');
-const db = mysql.createConnection({
+const mysql = require('mysql2');
+const cTable = require('console.table');
+const db = mysql.createConnection(
+    {
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'Kilo123!',
     database: 'staff_db'
 },
 console.log('connected to the staff_db database.')
@@ -33,7 +33,7 @@ const promptUser = () => {
         switch (data.selection) {
             case "View all department":
                 viewAllDepartments();
-                breaks;
+                break;
 
             case "View all roles":
                 viewAllRoles();
@@ -66,7 +66,7 @@ promptUser();
 
 const viewAllDepartments = () => {
     db.query(`SELECT * FROM department`, function (err, results) {
-        console.log(`\n`);
+        console.log("departments:", results);
         console.table(results);
         promptUser();
     })
@@ -141,7 +141,7 @@ return inquirer.prompt([
     db.query(`SELECT id FROM department.name =?`, data.addDepartment, (err, results) => {
 let department_id = results[0].id;
 db.query(`INSERT INTO role(title, salary, department_id)
-VALUES (?,?,?)`, [data.title, data.salary], (err, results) => {
+VALUES (?,?,?)`, [data.title, data.salary, department_id], (err, results) => {
     console.log("\nNew role added. see below");
     viewAllRoles();
 })
@@ -209,7 +209,7 @@ const addEmployee = () => {
                         db.query(`SELECT id FROM employee WHERE employee.first_name = ? AND employee.last_name = ?;`, data.manager.splits(""), (err, results) => {
                             manager = results[0].id;
                             db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id)
-                            VALUES (?,?,?)`, [frist_name, last_name, role_id, manager], (err, results) => {
+                            VALUES (?,?,?)`, [first_name, last_name, role_id, manager], (err, results) => {
                                 console.log("\nNew role added. see below");
                                 viewAllEmployees();
                          })
